@@ -9,8 +9,6 @@ run:
 
 This creates TFTP.jar. Place TFTP.jar along with TFTPclient.sh and TFTPServer.sh in a directory on your path.
 
-———————————————————————————————INSTRUCTION———————————————————————————————
-
 *************************
 **How to use the Client**
 *************************
@@ -42,8 +40,7 @@ Files are stored in or read from the current directory of the client.
 NOTE:
 -Each transfer will allow up to 5 times of time out, after which the connection will be closed.
 -Checksum of each file is provided after successfully transfer.
--File name should not contain ” ”(space)
--Please limit file size less than 35MB, file lager than this may get wrong during transfer
+-File size is limited to 33554432 bytes by the protocol.
 
 *************************
 **How to run the Server**
@@ -66,6 +63,4 @@ SHA1 checksum: 3abbb1e4f8c6585d259d6a1a54e97fc1bd6f2b9a
 Note:
 -The server can support up to 2 clients at the same time. No guarantee if clients are more than 2.
 -Checksum of each file is provided after successfully transfer.
--File name should not contain ” ”(space)
--Please limit file size less than 35MB, file lager than this may get wrong during transfer
-
+-File size is limited to 33554432 bytes by the protocol.
