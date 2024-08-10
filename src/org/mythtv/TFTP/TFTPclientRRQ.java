@@ -1,9 +1,11 @@
+package org.mythtv.TFTP;
 
-import java.net.*;
-import java.security.MessageDigest;
-import java.io.*;
-import java.util.*;
-import java.util.zip.Checksum;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 
 class TFTPclientRRQ {
 	protected InetAddress server;
@@ -19,7 +21,7 @@ class TFTPclientRRQ {
 			DatagramSocket sock = new DatagramSocket();
 			sock.setSoTimeout(2000); // set time out to 2s
 
-			FileOutputStream outFile = new FileOutputStream("../"+fileName); //parent folder
+			FileOutputStream outFile = new FileOutputStream(fileName); // parent folder
 			// Send request to server
 			TFTPread reqPak = new TFTPread(fileName, dataMode);
 			reqPak.send(server, 6973, sock);
@@ -28,7 +30,6 @@ class TFTPclientRRQ {
 			InetAddress newIP = server; // for transfer
 			int newPort = 0; // for transfer
 			int timeoutLimit = 5;
-			int testloss = 1; // test only
 
 			// Process the transfer
 			System.out.println("Downloading");
@@ -36,7 +37,7 @@ class TFTPclientRRQ {
 				while (timeoutLimit != 0) {
 					try {
 						TFTPpacket inPak = TFTPpacket.receive(sock);
-						//check packet type
+						// check packet type
 						if (inPak instanceof TFTPerror) {
 							TFTPerror p = (TFTPerror) inPak;
 							throw new TftpException(p.message());
@@ -59,9 +60,7 @@ class TFTPclientRRQ {
 							newPort = p.getPort();
 							// check block num.
 
-							if (/* testloss==20|| */blkNum != p.blockNumber()) { //old data
-								// testloss++;
-								//System.out.println("@testloss loss blkNum " + blkNum);
+							if (blkNum != p.blockNumber()) { // old data
 								throw new SocketTimeoutException();
 							}
 							// everything is fine then write to the file
@@ -69,7 +68,6 @@ class TFTPclientRRQ {
 							// send ack to the server
 							ack = new TFTPack(blkNum);
 							ack.send(newIP, newPort, sock);
-							// testloss++;
 							break;
 						} else
 							throw new TftpException("Unexpected response from server");
@@ -77,14 +75,15 @@ class TFTPclientRRQ {
 					// #######handle time out
 					catch (SocketTimeoutException t) {
 						// no response to read request, try again
-						if (blkNum == 1) { 
+						if (blkNum == 1) {
 							System.out.println("failed to reach the server");
 							reqPak.send(server, 6973, sock);
 							timeoutLimit--;
-						} 
+						}
 						// no response to the last ack
-						else { 
-							System.out.println("connecion time out, resend last ack. timeoutlimit left=" + timeoutLimit);
+						else {
+							System.out
+									.println("connecion time out, resend last ack. timeoutlimit left=" + timeoutLimit);
 							ack = new TFTPack(blkNum - 1);
 							ack.send(newIP, newPort, sock);
 							timeoutLimit--;
@@ -96,12 +95,12 @@ class TFTPclientRRQ {
 				}
 			}
 			System.out.println("\nDownload Finished.\nFilename: " + fileName);
-			System.out.println("SHA1 Checksum: " + CheckSum.getChecksum("../"+fileName));
-			
+			System.out.println("SHA1 Checksum: " + CheckSum.getChecksum(fileName));
+
 			outFile.close();
 			sock.close();
 		} catch (IOException e) {
-			System.out.println("IO error, transfer aborted");
+			System.out.println("IO error, transfer aborted " + e.getMessage());
 			File wrongFile = new File(fileName);
 			wrongFile.delete();
 		} catch (TftpException e) {

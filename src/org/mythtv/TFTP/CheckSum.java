@@ -1,13 +1,14 @@
+package org.mythtv.TFTP;
+
 import java.io.FileInputStream;
 import java.security.MessageDigest;
-
 
 public class CheckSum {
 	static String getChecksum(String fileName) {
 		StringBuffer sb = new StringBuffer("");
 		try {
 			String datafile = fileName;
-			//usd SHA1 to calculate checksum
+			// use SHA1 to calculate checksum
 			MessageDigest md = MessageDigest.getInstance("SHA1");
 			FileInputStream fis = new FileInputStream(datafile);
 			byte[] dataBytes = new byte[1024];
@@ -26,8 +27,10 @@ public class CheckSum {
 				sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
 			}
 
-		} catch (Exception e){System.out.println("Generate Checksum Failed: "+e.getMessage());}
-		
+		} catch (Exception e) {
+			System.out.println("Generate Checksum Failed: " + e.getMessage());
+		}
+
 		return sb.toString();
 	}
-	}
+}
