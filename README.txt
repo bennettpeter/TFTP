@@ -49,9 +49,9 @@ NOTE:
 **How to run the Server**
 *************************
 
-Open terminal (or CMD), change path to a folder containing the files you want to send or the place you want received files
+Open terminal (or CMD), change path to a folder containing the files you want to send or the place you want received files.
 
-Run the server using “TFTPServer.sh”， then server will start and listen to port 6969.
+Run the server using “sudo TFTPServer.sh”， then server will start and listen to port 69. Root is required to be permitted to listen on port 69.
 
 Files are stored in or read from the current directory of the server.
 
